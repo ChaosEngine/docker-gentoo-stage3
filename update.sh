@@ -41,7 +41,7 @@ docker rm "$container"
 docker rmi "$image"
 
 echo 'FROM scratch' > Dockerfile
-echo "ADD $xz /" >> Dockerfile
+echo 'ADD $xz /' >> Dockerfile
 echo 'CMD ["/bin/bash"]' >> Dockerfile
 
 user="$(docker info | awk '/^Username:/ { print $2 }')"
