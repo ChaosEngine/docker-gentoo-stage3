@@ -3,7 +3,8 @@ set -e
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
-stage3="$(wget -qO- 'http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64.txt' | tail -n1)"
+stage3="$(wget -qO- 'http://distfiles.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64.txt' | tail -n1 | cut -f 1 -d ' ')"
+echo "ch_start0 $(stage3)"
 
 if [ -z "$stage3" ]; then
 	echo >&2 'wtf failure'
@@ -29,6 +30,8 @@ docker rm -f "$container" > /dev/null 2>&1 || true
 	pythonTarget="${pythonTarget##* }"
 	echo \'PYTHON_TARGETS="\'$pythonTarget\'"\' >> /etc/portage/make.conf
 	echo \'PYTHON_SINGLE_TARGET="\'$pythonTarget\'"\' >> /etc/portage/make.conf
+	echo DISTDIR="/var/tmp/distfiles" >> /etc/portage/make.conf
+	emerge -vq --nodeps sys-apps/kmod sys-apps/openrc
 	emerge --newuse --deep --with-bdeps=y @system @world
 	emerge -C editor ssh man man-pages openrc e2fsprogs texinfo service-manager
 	emerge --depclean
